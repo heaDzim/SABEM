@@ -143,7 +143,7 @@ async function salvarEntradaEmocional({ moodKey, reflection, emotionTags }) {
   return data;
 }
 
-async function listarEntradasRecentes(limit = 10) {
+async function listarEntradasRecentes(limit = 4) {
   const user = await getCurrentUser();
   if (!user) return [];
   const { data, error } = await supabaseClient
@@ -180,20 +180,22 @@ async function carregarPainelProgresso() {
   const user = await getCurrentUser();
   if (!user) return { visits: 0, progress: [], actions: [], achievements: [] };
 
-  const [visits, progress, actions, achievements] = await Promise.all([
+  const [visits, progress, actions, achievements, toolEvents] = await Promise.all([
     supabaseClient.from('site_visits').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
     supabaseClient.from('progress_items').select('*').eq('user_id', user.id).order('item_key'),
     supabaseClient.from('quick_action_events').select('action_key, action_label, accessed_at').eq('user_id', user.id).order('accessed_at', { ascending: false }).limit(20),
-    supabaseClient.from('achievements').select('*').eq('user_id', user.id).order('achieved_at', { ascending: false }).limit(10)
+    supabaseClient.from('achievements').select('*').eq('user_id', user.id).order('achieved_at', { ascending: false }).limit(10),
+    supabaseClient.from('tool_events').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
   ]);
-  for (const response of [visits, progress, actions, achievements]) {
+  for (const response of [visits, progress, actions, achievements, toolEvents]) {
     if (response.error) throw response.error;
   }
   return {
     visits: visits.count || 0,
     progress: progress.data || [],
     actions: actions.data || [],
-    achievements: achievements.data || []
+    achievements: achievements.data || [],
+    toolEvents: toolEvents.count || 0
   };
 }
 
@@ -216,7 +218,8 @@ async function listarHabitos() {
     .select('id, name, active, created_at, habit_completions(id, completed_on)')
     .eq('user_id', user.id)
     .eq('active', true)
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: false })
+    .limit(4);
   if (error) throw error;
   return data || [];
 }

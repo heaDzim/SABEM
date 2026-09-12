@@ -14,6 +14,9 @@
     if (!window.SABEM) return;
 
     const profile = await SABEM.carregarPerfil().catch(() => null);
+    if (profile) {
+      SABEM.registrarVisita(window.location.pathname).catch(error => console.error('Não foi possível registrar a visita:', error));
+    }
     const loggedUser = document.querySelector('#loggedUser');
     const logoutBtn = document.querySelector('#logoutBtn');
 
@@ -32,6 +35,58 @@
       }
     }
 
+    const visitCount = document.querySelector('#visitCount');
+    const toolUsageSummary = document.querySelector('#toolUsageSummary');
+    const achievementList = document.querySelector('#achievementList');
+
+    async function loadProgressPanel() {
+      if (!visitCount && !document.querySelector('[data-progress-key]')) return;
+      if (!profile) {
+        if (visitCount) visitCount.textContent = '0';
+        if (toolUsageSummary) toolUsageSummary.textContent = 'Faça login para acompanhar seu histórico.';
+        return;
+      }
+      try {
+        const panel = await SABEM.carregarPainelProgresso();
+        if (visitCount) visitCount.textContent = panel.visits;
+        if (toolUsageSummary) toolUsageSummary.textContent = `${panel.toolEvents || 0} usos de ferramentas · ${panel.actions.length} ações rápidas`;
+        (panel.progress || []).forEach(item => {
+          const row = document.querySelector(`[data-progress-key="${item.item_key}"]`);
+          if (!row) return;
+          const target = Number(item.target_count) || 1;
+          const completed = Number(item.completed_count) || 0;
+          const percent = Math.min(100, Math.round((completed / target) * 100));
+          const fill = row.querySelector('[data-progress-fill]');
+          const label = row.querySelector('[data-progress-label]');
+          if (fill) fill.style.width = `${percent}%`;
+          if (label) label.textContent = `${percent}% da meta semanal (${completed}/${target})`;
+        });
+        if (achievementList) {
+          achievementList.replaceChildren();
+          if (!panel.achievements.length) {
+            const empty = document.createElement('span');
+            empty.textContent = 'Continue usando as ferramentas para desbloquear conquistas.';
+            achievementList.appendChild(empty);
+          } else {
+            panel.achievements.forEach(achievement => {
+              const item = document.createElement('div');
+              item.className = 'achievement-item earned';
+              const icon = document.createElement('i');
+              icon.className = 'fas fa-medal';
+              const label = document.createElement('span');
+              label.textContent = achievement.title;
+              item.append(icon, label);
+              achievementList.appendChild(item);
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Não foi possível carregar o progresso:', error);
+      }
+    }
+
+    await loadProgressPanel();
+
     const diaryEntries = document.querySelector('#diaryEntries');
     const diaryText = document.querySelector('#diaryText');
     const saveDiary = document.querySelector('#saveDiary');
@@ -47,7 +102,7 @@
         diaryEntries.textContent = 'Nenhuma entrada salva ainda.';
         return;
       }
-      entries.slice(0, 2).forEach(entry => {
+      entries.slice(0, 4).forEach(entry => {
         const card = document.createElement('article');
         card.className = 'diary-entry-item';
         const header = document.createElement('div');
@@ -76,7 +131,7 @@
     }
 
     if (diaryEntries) {
-      renderRemoteDiary(await SABEM.listarEntradasRecentes(2).catch(() => []));
+      renderRemoteDiary(await SABEM.listarEntradasRecentes(4).catch(() => []));
     }
 
     if (saveDiary) {
@@ -90,7 +145,7 @@
             reflection: diaryText ? diaryText.value.trim() : '',
             emotionTags: [...document.querySelectorAll('.tag.selected')].map(tag => tag.dataset.tag)
           });
-          renderRemoteDiary(await SABEM.listarEntradasRecentes(2));
+          renderRemoteDiary(await SABEM.listarEntradasRecentes(4));
           notify('Entrada salva com sucesso!', 'success');
         } catch (error) {
           notify(`Não foi possível salvar: ${error.message}`, 'warning');
@@ -126,6 +181,10 @@
       const technique = document.querySelector('#breathingTechnique');
       SABEM.registrarEvento('timer_respiracao', 'start', { technique: technique ? technique.value : null }).catch(console.error);
     });
+    const stopBreathing = document.querySelector('#stopBreathing');
+    if (stopBreathing) stopBreathing.addEventListener('click', () => {
+      SABEM.registrarProgresso('meditacao').catch(console.error);
+    });
 
     const habitsList = document.querySelector('#habitsList');
     const addHabitBtn = document.querySelector('#addHabitBtn');
@@ -160,7 +219,13 @@
         const name = document.createElement('span');
         name.className = 'habit-name';
         name.textContent = habit.name;
-        content.append(check, name);
+        const createdAt = new Date(habit.created_at);
+        const elapsedDays = Math.max(0, Math.floor((Date.now() - createdAt.getTime()) / 86400000));
+        const completedDays = (habit.habit_completions || []).length;
+        const streak = document.createElement('span');
+        streak.className = 'habit-streak';
+        streak.textContent = `${elapsedDays} ${elapsedDays === 1 ? 'dia' : 'dias'} decorridos · ${completedDays} concluídos`;
+        content.append(check, name, streak);
         const del = document.createElement('button');
         del.className = 'habit-delete';
         del.type = 'button';
@@ -182,7 +247,7 @@
         habitsList.textContent = 'Entre na sua conta para acompanhar seus hábitos.';
         return;
       }
-      try { renderHabits(await SABEM.listarHabitos()); }
+      try { renderHabits((await SABEM.listarHabitos()).slice(0, 4)); }
       catch (error) { habitsList.textContent = 'Não foi possível carregar os hábitos.'; console.error(error); }
     }
 

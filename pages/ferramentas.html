@@ -321,76 +321,80 @@
                         </div>
                         <div class="tool-content">
                             <div class="progress-tracker">
+                                <div class="progress-summary" aria-live="polite">
+                                    <strong><span id="visitCount">0</span> visitas registradas</strong>
+                                    <span id="toolUsageSummary">Faça login para acompanhar seu histórico.</span>
+                                </div>
                                 <div class="progress-overview">
-                                    <div class="progress-item">
+<div class="progress-item" data-progress-key="exercicios">
                                         <div class="progress-icon">
                                             <i class="fas fa-dumbbell"></i>
                                         </div>
                                         <div class="progress-info">
                                             <h4>Exercícios</h4>
                                             <div class="progress-bar">
-                                                <div class="progress-fill" style="width: 65%"></div>
+                                                <div class="progress-fill" data-progress-fill></div>
                                             </div>
-                                            <span>65% da meta semanal</span>
+                                            <span data-progress-label>Sem dados registrados</span>
                                         </div>
                                     </div>
 
-                                    <div class="progress-item">
+<div class="progress-item" data-progress-key="meditacao">
                                         <div class="progress-icon">
                                             <i class="fas fa-brain"></i>
                                         </div>
                                         <div class="progress-info">
                                             <h4>Meditação</h4>
                                             <div class="progress-bar">
-                                                <div class="progress-fill" style="width: 40%"></div>
+                                                <div class="progress-fill" data-progress-fill></div>
                                             </div>
-                                            <span>40% da meta semanal</span>
+                                            <span data-progress-label>Sem dados registrados</span>
                                         </div>
                                     </div>
 
-                                    <div class="progress-item">
+<div class="progress-item" data-progress-key="sono">
                                         <div class="progress-icon">
                                             <i class="fas fa-bed"></i>
                                         </div>
                                         <div class="progress-info">
                                             <h4>Sono</h4>
                                             <div class="progress-bar">
-                                                <div class="progress-fill" style="width: 85%"></div>
+                                                <div class="progress-fill" data-progress-fill></div>
                                             </div>
-                                            <span>85% da meta semanal</span>
+                                            <span data-progress-label>Sem dados registrados</span>
                                         </div>
                                     </div>
 
-                                    <div class="progress-item">
+<div class="progress-item" data-progress-key="alimentacao">
                                         <div class="progress-icon">
                                             <i class="fas fa-apple-alt"></i>
                                         </div>
                                         <div class="progress-info">
                                             <h4>Alimentação</h4>
                                             <div class="progress-bar">
-                                                <div class="progress-fill" style="width: 70%"></div>
+                                                <div class="progress-fill" data-progress-fill></div>
                                             </div>
-                                            <span>70% da meta semanal</span>
+                                            <span data-progress-label>Sem dados registrados</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="achievements">
                                     <h4>Conquistas Recentes</h4>
-                                    <div class="achievement-list">
-                                        <div class="achievement-item earned">
+                                    <div class="achievement-list" id="achievementList">
+                                        <div class="achievement-item earned" data-static-achievement>
                                             <i class="fas fa-medal"></i>
                                             <span>7 dias consecutivos de exercício</span>
                                         </div>
-                                        <div class="achievement-item earned">
+                                        <div class="achievement-item earned" data-static-achievement>
                                             <i class="fas fa-star"></i>
                                             <span>Primeira semana de meditação</span>
                                         </div>
-                                        <div class="achievement-item">
+                                        <div class="achievement-item" data-static-achievement>
                                             <i class="fas fa-crown"></i>
                                             <span>30 dias de hábitos saudáveis</span>
                                         </div>
-                                        <div class="achievement-item">
+                                        <div class="achievement-item" data-static-achievement>
                                             <i class="fas fa-gem"></i>
                                             <span>Mestre do bem-estar</span>
                                         </div>
@@ -473,7 +477,7 @@
                     <ul class="footer-links">
                         <li><a href="sobre.html">Nossa Missão</a></li>
                         <li><a href="#contato">Contato</a></li>
-                        <li><a href="#privacidade">Privacidade</a></li>
+                        <li><a href="sobre.html#privacidade">Privacidade</a></li>
                     </ul>
                 </div>
                 
@@ -505,7 +509,6 @@
     <script src="../js/script.js"></script>
     <script src="../js/tools.js"></script>
     <script src="../js/persistence.js"></script>
-    <script>document.addEventListener("DOMContentLoaded", () => { if (window.SABEM) SABEM.registrarVisita(window.location.pathname).catch(console.error); });</script>
 </body>
 </html>
 
