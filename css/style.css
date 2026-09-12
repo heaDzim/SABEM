@@ -13,34 +13,34 @@
     --success-color: #4CAF50;
     --warning-color: #FF9800;
     --danger-color: #f44336;
-
+    
     /* Cores Neutras */
     --white: #FFFFFF;
     --light-gray: #F5F5F5;
     --medium-gray: #E0E0E0;
     --dark-gray: #424242;
     --black: #212121;
-
+    
     /* Gradientes */
     --primary-gradient: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
     --secondary-gradient: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
     --hero-gradient: linear-gradient(135deg, rgba(76, 175, 80, 0.9) 0%, rgba(33, 150, 243, 0.9) 100%);
-
+    
     /* Tipografia */
     --font-primary: 'Poppins', sans-serif;
     --font-secondary: 'Open Sans', sans-serif;
-
+    
     /* Tamanhos */
     --header-height: 80px;
     --border-radius: 12px;
     --border-radius-small: 8px;
     --border-radius-large: 20px;
-
+    
     /* Sombras */
     --shadow-small: 0 2px 8px rgba(0, 0, 0, 0.1);
     --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.15);
     --shadow-large: 0 8px 32px rgba(0, 0, 0, 0.2);
-
+    
     /* Transições */
     --transition-fast: 0.2s ease;
     --transition-medium: 0.3s ease;
@@ -641,7 +641,6 @@ body {
         opacity: 0;
         transform: translateY(30px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -649,12 +648,9 @@ body {
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
+    0%, 100% {
         transform: scale(1);
     }
-
     50% {
         transform: scale(1.05);
     }
@@ -664,62 +660,24 @@ body {
     animation: fadeInUp 0.6s ease forwards;
 }
 
-.feature-card:nth-child(1) {
-    animation-delay: 0.1s;
-}
-
-.feature-card:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.feature-card:nth-child(3) {
-    animation-delay: 0.3s;
-}
+.feature-card:nth-child(1) { animation-delay: 0.1s; }
+.feature-card:nth-child(2) { animation-delay: 0.2s; }
+.feature-card:nth-child(3) { animation-delay: 0.3s; }
 
 /* Utility Classes */
-.text-center {
-    text-align: center;
-}
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
 
-.text-left {
-    text-align: left;
-}
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
 
-.text-right {
-    text-align: right;
-}
-
-.mb-1 {
-    margin-bottom: 0.5rem;
-}
-
-.mb-2 {
-    margin-bottom: 1rem;
-}
-
-.mb-3 {
-    margin-bottom: 1.5rem;
-}
-
-.mb-4 {
-    margin-bottom: 2rem;
-}
-
-.mt-1 {
-    margin-top: 0.5rem;
-}
-
-.mt-2 {
-    margin-top: 1rem;
-}
-
-.mt-3 {
-    margin-top: 1.5rem;
-}
-
-.mt-4 {
-    margin-top: 2rem;
-}
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
 
 
 
@@ -1535,21 +1493,10 @@ body {
     gap: 0.5rem;
 }
 
-.emotion-category.joy h4 {
-    color: #FFD700;
-}
-
-.emotion-category.sadness h4 {
-    color: #4682B4;
-}
-
-.emotion-category.anger h4 {
-    color: #DC143C;
-}
-
-.emotion-category.fear h4 {
-    color: #FF8C00;
-}
+.emotion-category.joy h4 { color: #FFD700; }
+.emotion-category.sadness h4 { color: #4682B4; }
+.emotion-category.anger h4 { color: #DC143C; }
+.emotion-category.fear h4 { color: #FF8C00; }
 
 .emotion-category ul {
     list-style: none;
@@ -1613,17 +1560,9 @@ body {
     color: var(--white);
 }
 
-.scale-item.low {
-    background: var(--primary-color);
-}
-
-.scale-item.medium {
-    background: var(--accent-color);
-}
-
-.scale-item.high {
-    background: var(--danger-color);
-}
+.scale-item.low { background: var(--primary-color); }
+.scale-item.medium { background: var(--accent-color); }
+.scale-item.high { background: var(--danger-color); }
 
 .self-care-grid {
     display: grid;
@@ -2624,3 +2563,47 @@ body {
         font-size: 1.5rem;
     }
 }
+
+
+/* ===== Melhorias visuais SABEM ===== */
+.nav-logo { display:inline-flex; flex-direction:column; text-decoration:none; color:inherit; }
+.account-nav-item { display:flex; align-items:center; gap:.35rem; }
+.logged-user { max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--primary-color); font-size:.82rem; font-weight:600; }
+.logout-btn { border:1px solid var(--danger-color); border-radius:var(--border-radius-small); background:transparent; color:var(--danger-color); cursor:pointer; padding:.42rem .6rem; font-size:.8rem; }
+.logout-btn:hover { background:var(--danger-color); color:var(--white); }
+.exercise-image { background:var(--light-gray); display:flex; justify-content:center; align-items:center; min-height:250px; }
+.exercise-image img { display:block; width:100%; height:auto; max-height:420px; object-fit:contain; }
+.add-habit { display:flex; gap:.5rem; width:100%; align-items:stretch; }
+.habit-input { min-width:0; flex:1 1 auto; }
+.add-habit #addHabitBtn { flex:0 0 48px; min-width:48px; }
+.back-home { display:inline-flex; align-items:center; gap:.5rem; margin-bottom:1rem; color:#4CAF50; font-weight:700; text-decoration:none; }
+.back-home:hover { text-decoration:underline; }
+@media (min-width:1200px) {
+  .container, .nav-container, .hero-content { max-width:1080px; }
+  .hero-title { font-size:2.8rem; }
+  .page-title { font-size:2.4rem; }
+  .section-title { font-size:2rem; }
+  .tools-grid { gap:1.25rem; }
+  .tool-card { padding:1.25rem; }
+  .nav-menu { gap:.75rem; }
+  .nav-link { padding:.45rem .65rem; font-size:.92rem; }
+}
+@media (max-width:768px) {
+  .account-nav-item { align-items:flex-start; flex-wrap:wrap; }
+  .logged-user { width:100%; max-width:180px; margin-left:1.8rem; }
+  .logout-btn { margin-left:1.8rem; }
+}
+@media (max-width:480px) {
+  .tool-card, .tool-content, .habit-tracker { width:100%; min-width:0; }
+  .add-habit { flex-wrap:wrap; }
+  .habit-input { flex:1 1 calc(100% - 56px); min-width:0; }
+  .add-habit #addHabitBtn { flex:0 0 48px; }
+  .habit-item, .habit-content { width:100%; min-width:0; }
+  .habit-name { overflow-wrap:anywhere; }
+}
+
+/* Seção de privacidade */
+.privacy-card { max-width: 900px; margin: 0 auto; }
+.privacy-card h2 { color: var(--primary-color); margin-bottom: 1rem; }
+.privacy-card h2 i { margin-right: .45rem; }
+.privacy-card p + p { margin-top: .75rem; }

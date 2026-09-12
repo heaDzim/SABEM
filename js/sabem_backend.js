@@ -3,10 +3,13 @@
  * Inclua primeiro o SDK do Supabase no HTML:
  * <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
  * <script src="js/sabem_backend.js"></script>
-  */
+ *
+ * Substitua os dois valores abaixo pelos dados públicos do seu projeto.
+ * Nunca coloque a service_role key no navegador.
+ */
 
-const SUPABASE_URL = 'https://yiwgsuzzfkemflhoxjej.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlpd2dzdXp6ZmtlbWZsaG94amVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMDM5ODEsImV4cCI6MjEwNDc3OTk4MX0.CBUU83ZXHMqhW4Co7J8u9_wxTXzXi6uIzuAescVuGzc';
+const SUPABASE_URL = https://yiwgsuzzfkemflhoxjej.supabase.co;
+const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlpd2dzdXp6ZmtlbWZsaG94amVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMDM5ODEsImV4cCI6MjEwNDc3OTk4MX0.CBUU83ZXHMqhW4Co7J8u9_wxTXzXi6uIzuAescVuGzc;
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const SABEM_PROGRESS = [
@@ -205,6 +208,64 @@ async function carregarPainelProgresso() {
 //   renderEntradas(await listarEntradasRecentes());
 // });
 
+async function listarHabitos() {
+  const user = await getCurrentUser();
+  if (!user) return [];
+  const { data, error } = await supabaseClient
+    .from('habits')
+    .select('id, name, active, created_at, habit_completions(id, completed_on)')
+    .eq('user_id', user.id)
+    .eq('active', true)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
+async function criarHabito(name) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('Faça login para criar um hábito.');
+  const { data, error } = await supabaseClient
+    .from('habits')
+    .insert({ user_id: user.id, name: name.trim() })
+    .select()
+    .single();
+  if (error) throw error;
+  await registrarEvento('tracker_habitos', 'create_habit', { name: name.trim() });
+  return data;
+}
+
+async function alternarHabito(habitId, completed) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('Faça login para marcar um hábito.');
+  const day = new Date().toISOString().slice(0, 10);
+  if (completed) {
+    const { error } = await supabaseClient
+      .from('habit_completions')
+      .upsert({ habit_id: habitId, user_id: user.id, completed_on: day }, { onConflict: 'habit_id,completed_on' });
+    if (error) throw error;
+  } else {
+    const { error } = await supabaseClient
+      .from('habit_completions')
+      .delete()
+      .eq('habit_id', habitId)
+      .eq('user_id', user.id)
+      .eq('completed_on', day);
+    if (error) throw error;
+  }
+  await registrarEvento('tracker_habitos', completed ? 'complete_habit' : 'uncomplete_habit', { habitId });
+}
+
+async function excluirHabito(habitId) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('Faça login para excluir um hábito.');
+  const { error } = await supabaseClient
+    .from('habits')
+    .update({ active: false })
+    .eq('id', habitId)
+    .eq('user_id', user.id);
+  if (error) throw error;
+}
+
 window.SABEM = {
   cadastrarUsuario,
   entrarUsuario,
@@ -216,5 +277,9 @@ window.SABEM = {
   salvarEntradaEmocional,
   listarEntradasRecentes,
   registrarProgresso,
-  carregarPainelProgresso
+  carregarPainelProgresso,
+  listarHabitos,
+  criarHabito,
+  alternarHabito,
+  excluirHabito
 };

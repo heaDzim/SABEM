@@ -14,10 +14,10 @@
     <header class="header">
         <nav class="navbar">
             <div class="nav-container">
-                <div class="nav-logo">
+                <a class="nav-logo" href="../index.html" aria-label="Voltar para a página inicial do SABEM">
                     <h2>SABEM</h2>
                     <span>Saúde & Bem-Estar</span>
-                </div>
+                </a>
                 <ul class="nav-menu">
                     <li class="nav-item">
                         <a href="../index.html" class="nav-link">
@@ -50,11 +50,13 @@
                         </a>
                     </li>
 
-                    <li class="nav-item">
+                    <li class="nav-item account-nav-item">
                         <a href="../cadastro.html" class="nav-link">
                             <i class="fas fa-user-circle"></i>
                             <span>Minha conta</span>
                         </a>
+                        <span id="loggedUser" class="logged-user" hidden></span>
+                        <button id="logoutBtn" class="logout-btn" type="button" hidden>Sair</button>
                     </li>
                 </ul>
                 <div class="hamburger">
@@ -568,6 +570,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/sabem_backend.js"></script>
     <script src="../js/script.js"></script>
+    <script src="../js/persistence.js"></script>
 </body>
 </html>
 
