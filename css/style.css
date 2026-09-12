@@ -2638,7 +2638,7 @@ body {
 /* Imagens das seções de Saúde Física e Saúde Mental */
 .section-image {
     width: min(100%, 760px);
-    height: 286px;
+    height: 372px;
     margin: 0 auto 1.25rem;
     overflow: hidden;
     border-radius: var(--border-radius);
@@ -2656,7 +2656,7 @@ body {
 
 @media (max-width: 600px) {
     .section-image {
-        height: 208px;
+        height: 270px;
         margin-bottom: 1rem;
     }
 }
