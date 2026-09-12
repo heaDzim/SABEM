@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SABEM - Site de Apoio à Rotina de Saúde e Bem-Estar</title>
+    <meta name="description" content="Plataforma dedicada ao bem-estar físico e mental de jovens e adultos. Descubra hábitos saudáveis, técnicas de relaxamento e ferramentas práticas para uma vida equilibrada.">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <h2>SABEM</h2>
+                    <span>Saúde & Bem-Estar</span>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#inicio" class="nav-link active">
+                            <i class="fas fa-home"></i>
+                            <span>Início</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pages/saude-fisica.html" class="nav-link">
+                            <i class="fas fa-heart"></i>
+                            <span>Saúde Física</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pages/saude-mental.html" class="nav-link">
+                            <i class="fas fa-brain"></i>
+                            <span>Saúde Mental</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pages/ferramentas.html" class="nav-link">
+                            <i class="fas fa-tools"></i>
+                            <span>Ferramentas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pages/sobre.html" class="nav-link">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Sobre</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="cadastro.html" class="nav-link">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Minha conta</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="inicio" class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Transforme sua vida com 
+                        <span class="highlight">hábitos saudáveis</span>
+                    </h1>
+                    <p class="hero-description">
+                        Descubra ferramentas práticas para cuidar da sua saúde física e mental. 
+                        Construa uma rotina equilibrada e alcance o bem-estar que você merece.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="pages/ferramentas.html" class="btn btn-primary">
+                            <i class="fas fa-rocket"></i>
+                            Começar Agora
+                        </a>
+                        <a href="#recursos" class="btn btn-secondary">
+                            <i class="fas fa-play"></i>
+                            Explorar Recursos
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="assets/images/hero-bem-estar.jpg" alt="Jovens praticando bem-estar ao ar livre">
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="recursos" class="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Recursos para seu Bem-Estar</h2>
+                    <p class="section-description">
+                        Explore nossas ferramentas e conteúdos especializados para uma vida mais saudável
+                    </p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="feature-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="feature-title">Saúde Física</h3>
+                        <p class="feature-description">
+                            Exercícios práticos, dicas de alimentação saudável e orientações para um sono de qualidade.
+                        </p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Exercícios para casa</li>
+                            <li><i class="fas fa-check"></i> Receitas saudáveis</li>
+                            <li><i class="fas fa-check"></i> Higiene do sono</li>
+                        </ul>
+                        <a href="pages/saude-fisica.html" class="feature-link">
+                            Explorar <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3 class="feature-title">Saúde Mental</h3>
+                        <p class="feature-description">
+                            Técnicas de respiração, mindfulness e estratégias para gerenciar ansiedade e estresse.
+                        </p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Exercícios de respiração</li>
+                            <li><i class="fas fa-check"></i> Práticas de mindfulness</li>
+                            <li><i class="fas fa-check"></i> Gestão emocional</li>
+                        </ul>
+                        <a href="pages/saude-mental.html" class="feature-link">
+                            Explorar <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="feature-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3 class="feature-title">Ferramentas Práticas</h3>
+                        <p class="feature-description">
+                            Recursos interativos para acompanhar seu progresso e manter a motivação.
+                        </p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Diário emocional</li>
+                            <li><i class="fas fa-check"></i> Tracker de hábitos</li>
+                            <li><i class="fas fa-check"></i> Timer de respiração</li>
+                        </ul>
+                        <a href="pages/ferramentas.html" class="feature-link">
+                            Explorar <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="100">0</div>
+                        <div class="stat-label">Exercícios Disponíveis</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="50">0</div>
+                        <div class="stat-label">Técnicas de Relaxamento</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="30">0</div>
+                        <div class="stat-label">Receitas Saudáveis</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="24">0</div>
+                        <div class="stat-label">Suporte Diário</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta">
+            <div class="container">
+                <div class="cta-content">
+                    <h2 class="cta-title">Pronto para começar sua jornada?</h2>
+                    <p class="cta-description">
+                        Junte-se a milhares de pessoas que já transformaram suas vidas com nossos recursos.
+                    </p>
+                    <a href="pages/ferramentas.html" class="btn btn-primary btn-large">
+                        <i class="fas fa-rocket"></i>
+                        Iniciar Minha Jornada
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <h3>SABEM</h3>
+                        <p>Transformando vidas através do bem-estar físico e mental.</p>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Recursos</h4>
+                    <ul class="footer-links">
+                        <li><a href="pages/saude-fisica.html">Saúde Física</a></li>
+                        <li><a href="pages/saude-mental.html">Saúde Mental</a></li>
+                        <li><a href="pages/ferramentas.html">Ferramentas</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Sobre</h4>
+                    <ul class="footer-links">
+                        <li><a href="pages/sobre.html">Nossa Missão</a></li>
+                        <li><a href="#contato">Contato</a></li>
+                        <li><a href="#privacidade">Privacidade</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Conecte-se</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 SABEM. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/sabem_backend.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
+

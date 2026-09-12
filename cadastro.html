@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cadastro e Login — SABEM</title>
+  <style>
+    :root { --green:#4CAF50; --blue:#2196F3; --ink:#263238; --bg:#f4f8f5; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial,sans-serif; color:var(--ink); background:var(--bg); }
+    main { max-width:520px; margin:40px auto; padding:24px; }
+    .card { background:#fff; padding:28px; border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+    h1 { color:var(--green); margin-top:0; }
+    h2 { color:var(--blue); font-size:1.15rem; margin-top:28px; }
+    label { display:block; font-weight:700; margin:14px 0 6px; }
+    input { width:100%; padding:12px; border:1px solid #cfd8dc; border-radius:9px; font-size:1rem; }
+    button { width:100%; border:0; border-radius:9px; padding:13px; color:#fff; background:var(--green); font-size:1rem; font-weight:700; cursor:pointer; margin-top:18px; }
+    button.secondary { background:var(--blue); }
+    #status { margin-top:16px; padding:12px; border-radius:9px; background:#eef6ee; min-height:20px; }
+    small { display:block; margin-top:8px; color:#607d8b; }
+  </style>
+</head>
+<body>
+<main>
+  <section class="card">
+    <h1>SABEM</h1>
+    <p>Crie sua conta para salvar seu progresso, suas ferramentas e suas entradas emocionais.</p>
+
+    <h2>Criar cadastro</h2>
+    <form id="signupForm">
+      <label for="nickname">Apelido</label>
+      <input id="nickname" required minlength="2" maxlength="40" autocomplete="nickname">
+
+      <label for="birthDate">Data de nascimento</label>
+      <input id="birthDate" type="date" required>
+      <small>A idade será calculada automaticamente no banco de dados.</small>
+
+      <label for="signupEmail">E-mail</label>
+      <input id="signupEmail" type="email" required autocomplete="email">
+
+      <label for="signupPassword">Senha</label>
+      <input id="signupPassword" type="password" required minlength="8" autocomplete="new-password">
+
+      <button type="submit">Criar conta</button>
+    </form>
+
+    <h2>Entrar</h2>
+    <form id="loginForm">
+      <label for="loginEmail">E-mail</label>
+      <input id="loginEmail" type="email" required autocomplete="email">
+      <label for="loginPassword">Senha</label>
+      <input id="loginPassword" type="password" required autocomplete="current-password">
+      <button class="secondary" type="submit">Entrar</button>
+    </form>
+    <div id="status" role="status" aria-live="polite"></div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/sabem_backend.js"></script>
+<script>
+  const statusBox = document.querySelector('#status');
+  const show = message => { statusBox.textContent = message; };
+
+  document.querySelector('#signupForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    try {
+      await SABEM.cadastrarUsuario({
+        nickname: document.querySelector('#nickname').value.trim(),
+        birthDate: document.querySelector('#birthDate').value,
+        email: document.querySelector('#signupEmail').value.trim(),
+        password: document.querySelector('#signupPassword').value
+      });
+      show('Cadastro realizado. Verifique seu e-mail, se a confirmação estiver ativada, e depois entre.');
+    } catch (error) { show(`Não foi possível cadastrar: ${error.message}`); }
+  });
+
+  document.querySelector('#loginForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    try {
+      await SABEM.entrarUsuario(
+        document.querySelector('#loginEmail').value.trim(),
+        document.querySelector('#loginPassword').value
+      );
+      show('Login realizado. Redirecionando para as ferramentas...');
+      setTimeout(() => { window.location.href = 'pages/ferramentas.html'; }, 700);
+    } catch (error) { show(`Não foi possível entrar: ${error.message}`); }
+  });
+</script>
+</body>
+</html>

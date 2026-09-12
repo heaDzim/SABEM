@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferramentas - SABEM</title>
+    <meta name="description" content="Ferramentas práticas e interativas para acompanhar seu bem-estar: diário emocional, tracker de hábitos, timer de respiração e muito mais.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <h2>SABEM</h2>
+                    <span>Saúde & Bem-Estar</span>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="../index.html" class="nav-link">
+                            <i class="fas fa-home"></i>
+                            <span>Início</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="saude-fisica.html" class="nav-link">
+                            <i class="fas fa-heart"></i>
+                            <span>Saúde Física</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="saude-mental.html" class="nav-link">
+                            <i class="fas fa-brain"></i>
+                            <span>Saúde Mental</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="ferramentas.html" class="nav-link active">
+                            <i class="fas fa-tools"></i>
+                            <span>Ferramentas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="sobre.html" class="nav-link">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Sobre</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="../cadastro.html" class="nav-link">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Minha conta</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main style="margin-top: var(--header-height);">
+        <!-- Page Hero -->
+        <section class="page-hero" style="background: var(--accent-color); background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);">
+            <div class="container">
+                <div class="page-hero-content">
+                    <h1 class="page-title">Ferramentas Práticas</h1>
+                    <p class="page-description">
+                        Recursos interativos para acompanhar seu progresso e manter a motivação 
+                        na sua jornada de bem-estar físico e mental.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Grid -->
+        <section class="tools-section">
+            <div class="container">
+                <div class="tools-grid">
+                    <!-- Breathing Timer -->
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <div class="tool-icon">
+                                <i class="fas fa-wind"></i>
+                            </div>
+                            <h3>Timer de Respiração</h3>
+                            <p>Pratique exercícios de respiração com guia visual</p>
+                        </div>
+                        <div class="tool-content">
+                            <div class="breathing-timer">
+                                <div class="timer-controls">
+                                    <select id="breathingTechnique" class="technique-select">
+                                        <option value="478">Respiração 4-7-8</option>
+                                        <option value="box">Respiração Quadrada</option>
+                                        <option value="coherent">Respiração Coerente</option>
+                                    </select>
+                                </div>
+                                <div class="breathing-circle">
+                                    <div class="circle-animation" id="breathingCircle">
+                                        <div class="circle-text" id="breathingText">Clique para começar</div>
+                                    </div>
+                                </div>
+                                <div class="timer-buttons">
+                                    <button id="startBreathing" class="btn btn-primary">
+                                        <i class="fas fa-play"></i> Iniciar
+                                    </button>
+                                    <button id="pauseBreathing" class="btn btn-secondary" style="display: none;">
+                                        <i class="fas fa-pause"></i> Pausar
+                                    </button>
+                                    <button id="stopBreathing" class="btn btn-danger" style="display: none;">
+                                        <i class="fas fa-stop"></i> Parar
+                                    </button>
+                                </div>
+                                <div class="session-info">
+                                    <div class="info-item">
+                                        <span class="info-label">Ciclos:</span>
+                                        <span id="cycleCount">0</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Tempo:</span>
+                                        <span id="sessionTime">00:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Habit Tracker -->
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <div class="tool-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h3>Tracker de Hábitos</h3>
+                            <p>Acompanhe seus hábitos saudáveis diariamente</p>
+                        </div>
+                        <div class="tool-content">
+                            <div class="habit-tracker">
+                                <div class="add-habit">
+                                    <input type="text" id="newHabit" placeholder="Adicionar novo hábito..." class="habit-input">
+                                    <button id="addHabitBtn" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="habits-list" id="habitsList">
+                                    <!-- Hábitos padrão serão adicionados via JavaScript -->
+                                </div>
+                                <div class="habit-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-number" id="completedToday">0</span>
+                                        <span class="stat-label">Hoje</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number" id="weekStreak">0</span>
+                                        <span class="stat-label">Sequência</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number" id="totalHabits">0</span>
+                                        <span class="stat-label">Total</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emotional Diary -->
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <div class="tool-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h3>Diário Emocional</h3>
+                            <p>Registre e acompanhe seu estado emocional</p>
+                        </div>
+                        <div class="tool-content">
+                            <div class="emotional-diary">
+                                <div class="mood-selector">
+                                    <h4>Como você está se sentindo hoje?</h4>
+                                    <div class="mood-options">
+                                        <button class="mood-btn" data-mood="muito-feliz">
+                                            <i class="fas fa-grin-beam"></i>
+                                            <span>Muito Feliz</span>
+                                        </button>
+                                        <button class="mood-btn" data-mood="feliz">
+                                            <i class="fas fa-smile"></i>
+                                            <span>Feliz</span>
+                                        </button>
+                                        <button class="mood-btn" data-mood="neutro">
+                                            <i class="fas fa-meh"></i>
+                                            <span>Neutro</span>
+                                        </button>
+                                        <button class="mood-btn" data-mood="triste">
+                                            <i class="fas fa-frown"></i>
+                                            <span>Triste</span>
+                                        </button>
+                                        <button class="mood-btn" data-mood="muito-triste">
+                                            <i class="fas fa-sad-tear"></i>
+                                            <span>Muito Triste</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="diary-entry">
+                                    <textarea id="diaryText" placeholder="Escreva sobre seu dia, sentimentos ou reflexões..." class="diary-textarea"></textarea>
+                                    <div class="entry-tags">
+                                        <h5>Tags de emoção:</h5>
+                                        <div class="tags-container">
+                                            <span class="tag" data-tag="ansiedade">Ansiedade</span>
+                                            <span class="tag" data-tag="gratidao">Gratidão</span>
+                                            <span class="tag" data-tag="estresse">Estresse</span>
+                                            <span class="tag" data-tag="alegria">Alegria</span>
+                                            <span class="tag" data-tag="cansaco">Cansaço</span>
+                                            <span class="tag" data-tag="motivacao">Motivação</span>
+                                        </div>
+                                    </div>
+                                    <button id="saveDiary" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Salvar Entrada
+                                    </button>
+                                </div>
+                                <div class="diary-history">
+                                    <h4>Entradas Recentes</h4>
+                                    <div id="diaryEntries" class="entries-list">
+                                        <!-- Entradas serão carregadas via JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wellness Calculator -->
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <div class="tool-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>Calculadora de Bem-estar</h3>
+                            <p>Avalie seu estado atual e receba sugestões personalizadas</p>
+                        </div>
+                        <div class="tool-content">
+                            <div class="wellness-calculator">
+                                <div class="assessment-questions">
+                                    <div class="question-group">
+                                        <h4>Saúde Física</h4>
+                                        <div class="question">
+                                            <label>Quantos dias você se exercitou esta semana?</label>
+                                            <input type="range" id="exercise" min="0" max="7" value="3" class="slider">
+                                            <span class="slider-value" id="exerciseValue">3 dias</span>
+                                        </div>
+                                        <div class="question">
+                                            <label>Como está sua qualidade de sono?</label>
+                                            <input type="range" id="sleep" min="1" max="10" value="7" class="slider">
+                                            <span class="slider-value" id="sleepValue">7/10</span>
+                                        </div>
+                                        <div class="question">
+                                            <label>Como está sua alimentação?</label>
+                                            <input type="range" id="nutrition" min="1" max="10" value="6" class="slider">
+                                            <span class="slider-value" id="nutritionValue">6/10</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="question-group">
+                                        <h4>Saúde Mental</h4>
+                                        <div class="question">
+                                            <label>Nível de estresse (1-10):</label>
+                                            <input type="range" id="stress" min="1" max="10" value="5" class="slider">
+                                            <span class="slider-value" id="stressValue">5/10</span>
+                                        </div>
+                                        <div class="question">
+                                            <label>Satisfação geral com a vida:</label>
+                                            <input type="range" id="satisfaction" min="1" max="10" value="7" class="slider">
+                                            <span class="slider-value" id="satisfactionValue">7/10</span>
+                                        </div>
+                                        <div class="question">
+                                            <label>Frequência de práticas de relaxamento:</label>
+                                            <input type="range" id="relaxation" min="0" max="7" value="2" class="slider">
+                                            <span class="slider-value" id="relaxationValue">2 vezes/semana</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button id="calculateWellness" class="btn btn-primary btn-large">
+                                    <i class="fas fa-calculator"></i> Calcular Bem-estar
+                                </button>
+
+                                <div id="wellnessResults" class="wellness-results" style="display: none;">
+                                    <div class="result-score">
+                                        <div class="score-circle">
+                                            <span id="wellnessScore">0</span>
+                                            <small>/100</small>
+                                        </div>
+                                        <h4 id="wellnessLevel">Seu Nível de Bem-estar</h4>
+                                    </div>
+                                    <div class="recommendations">
+                                        <h4>Recomendações Personalizadas:</h4>
+                                        <ul id="recommendationsList">
+                                            <!-- Recomendações serão geradas via JavaScript -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Tracker -->
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <div class="tool-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <h3>Acompanhamento de Progresso</h3>
+                            <p>Visualize sua evolução ao longo do tempo</p>
+                        </div>
+                        <div class="tool-content">
+                            <div class="progress-tracker">
+                                <div class="progress-overview">
+                                    <div class="progress-item">
+                                        <div class="progress-icon">
+                                            <i class="fas fa-dumbbell"></i>
+                                        </div>
+                                        <div class="progress-info">
+                                            <h4>Exercícios</h4>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 65%"></div>
+                                            </div>
+                                            <span>65% da meta semanal</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="progress-item">
+                                        <div class="progress-icon">
+                                            <i class="fas fa-brain"></i>
+                                        </div>
+                                        <div class="progress-info">
+                                            <h4>Meditação</h4>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 40%"></div>
+                                            </div>
+                                            <span>40% da meta semanal</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="progress-item">
+                                        <div class="progress-icon">
+                                            <i class="fas fa-bed"></i>
+                                        </div>
+                                        <div class="progress-info">
+                                            <h4>Sono</h4>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 85%"></div>
+                                            </div>
+                                            <span>85% da meta semanal</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="progress-item">
+                                        <div class="progress-icon">
+                                            <i class="fas fa-apple-alt"></i>
+                                        </div>
+                                        <div class="progress-info">
+                                            <h4>Alimentação</h4>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 70%"></div>
+                                            </div>
+                                            <span>70% da meta semanal</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="achievements">
+                                    <h4>Conquistas Recentes</h4>
+                                    <div class="achievement-list">
+                                        <div class="achievement-item earned">
+                                            <i class="fas fa-medal"></i>
+                                            <span>7 dias consecutivos de exercício</span>
+                                        </div>
+                                        <div class="achievement-item earned">
+                                            <i class="fas fa-star"></i>
+                                            <span>Primeira semana de meditação</span>
+                                        </div>
+                                        <div class="achievement-item">
+                                            <i class="fas fa-crown"></i>
+                                            <span>30 dias de hábitos saudáveis</span>
+                                        </div>
+                                        <div class="achievement-item">
+                                            <i class="fas fa-gem"></i>
+                                            <span>Mestre do bem-estar</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <div class="tool-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h3>Ações Rápidas</h3>
+                            <p>Ferramentas instantâneas para momentos específicos</p>
+                        </div>
+                        <div class="tool-content">
+                            <div class="quick-actions">
+                                <div class="action-grid">
+                                    <button class="action-btn" id="anxietyHelp">
+                                        <i class="fas fa-heart"></i>
+                                        <span>Ajuda para Ansiedade</span>
+                                    </button>
+                                    <button class="action-btn" id="stressRelief">
+                                        <i class="fas fa-leaf"></i>
+                                        <span>Alívio do Estresse</span>
+                                    </button>
+                                    <button class="action-btn" id="energyBoost">
+                                        <i class="fas fa-bolt"></i>
+                                        <span>Aumentar Energia</span>
+                                    </button>
+                                    <button class="action-btn" id="sleepHelp">
+                                        <i class="fas fa-moon"></i>
+                                        <span>Ajuda para Dormir</span>
+                                    </button>
+                                    <button class="action-btn" id="motivationBoost">
+                                        <i class="fas fa-rocket"></i>
+                                        <span>Motivação</span>
+                                    </button>
+                                    <button class="action-btn" id="gratitudePractice">
+                                        <i class="fas fa-hands"></i>
+                                        <span>Prática de Gratidão</span>
+                                    </button>
+                                </div>
+                                <div id="actionResult" class="action-result" style="display: none;">
+                                    <!-- Resultado das ações será mostrado aqui -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <h3>SABEM</h3>
+                        <p>Transformando vidas através do bem-estar físico e mental.</p>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Recursos</h4>
+                    <ul class="footer-links">
+                        <li><a href="saude-fisica.html">Saúde Física</a></li>
+                        <li><a href="saude-mental.html">Saúde Mental</a></li>
+                        <li><a href="ferramentas.html">Ferramentas</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Sobre</h4>
+                    <ul class="footer-links">
+                        <li><a href="sobre.html">Nossa Missão</a></li>
+                        <li><a href="#contato">Contato</a></li>
+                        <li><a href="#privacidade">Privacidade</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Conecte-se</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 SABEM. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/sabem_backend.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/tools.js"></script>
+    <script src="../js/persistence.js"></script>
+    <script>document.addEventListener("DOMContentLoaded", () => { if (window.SABEM) SABEM.registrarVisita(window.location.pathname).catch(console.error); });</script>
+</body>
+</html>
+
