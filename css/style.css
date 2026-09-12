@@ -2614,33 +2614,3 @@ font-size: 0.92rem;
         font-size: 1.5rem;
     }
 }
-
-/* Ajuste de escala para monitores grandes */
-@media (min-width: 1200px) {
-
-    .container,
-    .nav-container,
-    .hero-content {
-        max-width: 1080px;
-    }
-
-    .hero-title {
-        font-size: 2.8rem;
-    }
-
-    .page-title {
-        font-size: 2.4rem;
-    }
-
-    .section-title {
-        font-size: 2rem;
-    }
-
-    .tools-grid {
-        gap: 1.25rem;
-    }
-
-    .tool-card {
-        padding: 1.25rem;
-    }
-}
