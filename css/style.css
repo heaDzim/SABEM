@@ -106,11 +106,21 @@ body {
 }
 
 .nav-menu {
-gap: 0.75rem;
+    display: flex;
+    list-style: none;
+    gap: 2rem;
 }
+
 .nav-link {
-padding: 0.45rem 0.65rem;
-font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--dark-gray);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-small);
+    transition: var(--transition-fast);
 }
 
 .nav-link:hover,
