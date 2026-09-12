@@ -8,8 +8,8 @@
  * Nunca coloque a service_role key no navegador.
  */
 
-const SUPABASE_URL = https://yiwgsuzzfkemflhoxjej.supabase.co;
-const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlpd2dzdXp6ZmtlbWZsaG94amVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMDM5ODEsImV4cCI6MjEwNDc3OTk4MX0.CBUU83ZXHMqhW4Co7J8u9_wxTXzXi6uIzuAescVuGzc;
+const SUPABASE_URL = 'https://yiwgsuzzfkemflhoxjej.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlpd2dzdXp6ZmtlbWZsaG94amVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMDM5ODEsImV4cCI6MjEwNDc3OTk4MX0.CBUU83ZXHMqhW4Co7J8u9_wxTXzXi6uIzuAescVuGzc';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const SABEM_PROGRESS = [
