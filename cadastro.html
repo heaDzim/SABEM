@@ -3,21 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Cadastro e Login — SABEM</title>
+  <title>Minha Conta — SABEM</title>
   <style>
-    :root { --green:#4CAF50; --blue:#2196F3; --ink:#263238; --bg:#f4f8f5; }
+    :root { --green:#4CAF50; --green-dark:#2e7d32; --blue:#1976d2; --ink:#263238; --bg:#f4f8f5; --muted:#607d8b; }
     * { box-sizing:border-box; }
     body { margin:0; font-family:Arial,sans-serif; color:var(--ink); background:var(--bg); }
-    main { max-width:520px; margin:40px auto; padding:24px; }
+    main { max-width:620px; margin:32px auto; padding:20px; }
     .card { background:#fff; padding:28px; border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
-    h1 { color:var(--green); margin-top:0; }
+    h1 { color:var(--green-dark); margin:0 0 8px; }
     h2 { color:var(--blue); font-size:1.15rem; margin-top:28px; }
+    p { line-height:1.55; }
+    .intro { color:#455a64; }
+    .instructions { background:#fff8e1; border-left:4px solid #f9a825; padding:14px 16px; border-radius:8px; margin:18px 0; line-height:1.5; }
+    .instructions strong { display:block; margin-bottom:6px; }
     label { display:block; font-weight:700; margin:14px 0 6px; }
     input { width:100%; padding:12px; border:1px solid #cfd8dc; border-radius:9px; font-size:1rem; }
+    input:focus { outline:3px solid rgba(33,150,243,.18); border-color:var(--blue); }
     button { width:100%; border:0; border-radius:9px; padding:13px; color:#fff; background:var(--green); font-size:1rem; font-weight:700; cursor:pointer; margin-top:18px; }
     button.secondary { background:var(--blue); }
-    #status { margin-top:16px; padding:12px; border-radius:9px; background:#eef6ee; min-height:20px; }
-    small { display:block; margin-top:8px; color:#607d8b; }
+    #status { margin-top:18px; padding:13px; border-radius:9px; background:#eef8ef; min-height:20px; line-height:1.45; }
+    #status.error { background:#ffebee; color:#b3261e; }
+    #status:empty { display:none; }
+    small { display:block; margin-top:8px; color:var(--muted); line-height:1.4; }
+    .recovery-panel { background:#f3f8ff; border:1px solid #bbdefb; border-radius:12px; padding:18px; margin:20px 0; }
+    .recovery-panel h2 { margin-top:0; }
+    [hidden] { display:none !important; }
   </style>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -25,8 +35,27 @@
 <main>
   <a class="back-home" href="index.html"><i class="fas fa-arrow-left"></i> Voltar para Início</a>
   <section class="card">
-    <h1>SABEM</h1>
-    <p>Crie sua conta para salvar seu progresso, suas ferramentas e suas entradas emocionais.</p>
+    <h1>Minha Conta</h1>
+    <p class="intro">Acesse sua conta para salvar seu progresso, acompanhar seus hábitos e manter suas entradas emocionais.</p>
+
+    <div id="recoveryInstructions" class="instructions" hidden>
+      <strong>Você está redefinindo sua senha</strong>
+      O link foi reconhecido. Digite uma nova senha no formulário abaixo e clique em <strong>Salvar nova senha</strong>. Depois da confirmação, você poderá entrar normalmente.
+    </div>
+
+    <section id="recoveryPanel" class="recovery-panel" hidden>
+      <h2>Escolha uma nova senha</h2>
+      <p>Use pelo menos 8 caracteres. Evite reutilizar uma senha usada em outro serviço.</p>
+      <form id="newPasswordForm">
+        <label for="newPassword">Nova senha</label>
+        <input id="newPassword" type="password" required minlength="8" autocomplete="new-password">
+        <label for="confirmPassword">Confirme a nova senha</label>
+        <input id="confirmPassword" type="password" required minlength="8" autocomplete="new-password">
+        <button type="submit">Salvar nova senha</button>
+      </form>
+    </section>
+
+    <div id="normalAccountForms">
 
     <h2>Criar cadastro</h2>
     <form id="signupForm">
@@ -59,14 +88,9 @@
       <label for="resetEmail">E-mail da conta</label>
       <input id="resetEmail" type="email" required autocomplete="email">
       <button class="secondary" type="submit">Enviar link de redefinição</button>
-      <small>Você receberá um link no e-mail cadastrado.</small>
+      <small>Se não encontrar a mensagem, confira também a pasta de spam. Por segurança, a resposta não informa se o endereço está cadastrado.</small>
     </form>
-
-    <form id="newPasswordForm" hidden>
-      <label for="newPassword">Nova senha</label>
-      <input id="newPassword" type="password" required minlength="8" autocomplete="new-password">
-      <button type="submit">Salvar nova senha</button>
-    </form>
+    </div>
 
     <div id="status" role="status" aria-live="polite"></div>
   </section>
@@ -75,7 +99,25 @@
 <script src="js/sabem_backend.js"></script>
 <script>
   const statusBox = document.querySelector('#status');
-  const show = message => { statusBox.textContent = message; };
+  const recoveryPanel = document.querySelector('#recoveryPanel');
+  const recoveryInstructions = document.querySelector('#recoveryInstructions');
+  const normalAccountForms = document.querySelector('#normalAccountForms');
+  const show = (message, isError = false) => {
+    statusBox.textContent = message;
+    statusBox.classList.toggle('error', isError);
+  };
+  const isRecoveryUrl = () => {
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const query = new URLSearchParams(window.location.search);
+    return hash.get('type') === 'recovery' || query.get('type') === 'recovery' || Boolean(hash.get('access_token') && hash.get('refresh_token'));
+  };
+  const activateRecoveryMode = () => {
+    recoveryPanel.hidden = false;
+    recoveryInstructions.hidden = false;
+    normalAccountForms.hidden = true;
+    document.querySelector('#newPassword').focus();
+    show('Link de recuperação válido. Agora informe e confirme sua nova senha.');
+  };
 
   document.querySelector('#signupForm').addEventListener('submit', async event => {
     event.preventDefault();
@@ -87,7 +129,7 @@
         password: document.querySelector('#signupPassword').value
       });
       show('Cadastro realizado. Verifique seu e-mail, se a confirmação estiver ativada, e depois entre.');
-    } catch (error) { show(`Não foi possível cadastrar: ${error.message}`); }
+    } catch (error) { show(`Não foi possível cadastrar: ${error.message}`, true); }
   });
 
   document.querySelector('#loginForm').addEventListener('submit', async event => {
@@ -99,32 +141,35 @@
       );
       show('Login realizado. Redirecionando para as ferramentas...');
       setTimeout(() => { window.location.href = 'pages/ferramentas.html'; }, 700);
-    } catch (error) { show(`Não foi possível entrar: ${error.message}`); }
+    } catch (error) { show(`Não foi possível entrar: ${error.message}`, true); }
   });
 
   document.querySelector('#resetRequestForm').addEventListener('submit', async event => {
     event.preventDefault();
     try {
-      await SABEM.solicitarRedefinicaoSenha(document.querySelector('#resetEmail').value.trim());
-      show('Se o e-mail estiver cadastrado, enviaremos um link para redefinir a senha.');
-    } catch (error) { show(`Não foi possível enviar o link: ${error.message}`); }
+      await SABEM.solicitarRedefinicaoSenha(document.querySelector('#resetEmail').value.trim(), `${window.location.origin}/cadastro.html`);
+      show('Link enviado. Abra o e-mail e clique no link; esta página mostrará automaticamente o formulário de nova senha.');
+    } catch (error) { show(`Não foi possível enviar o link: ${error.message}`, true); }
   });
 
-  const newPasswordForm = document.querySelector('#newPasswordForm');
-  window.supabase.auth.onAuthStateChange((event) => {
-    if (event === 'PASSWORD_RECOVERY') {
-      newPasswordForm.hidden = false;
-      show('Digite sua nova senha para concluir a recuperação.');
-    }
-  });
-
-  newPasswordForm.addEventListener('submit', async event => {
+  document.querySelector('#newPasswordForm').addEventListener('submit', async event => {
     event.preventDefault();
+    const password = document.querySelector('#newPassword').value;
+    const confirmation = document.querySelector('#confirmPassword').value;
+    if (password !== confirmation) { show('As senhas não coincidem. Confira os dois campos.', true); return; }
     try {
-      await SABEM.atualizarSenha(document.querySelector('#newPassword').value);
-      newPasswordForm.hidden = true;
-      show('Senha atualizada com sucesso. Você já pode entrar com a nova senha.');
-    } catch (error) { show(`Não foi possível atualizar a senha: ${error.message}`); }
+      await SABEM.atualizarSenha(password);
+      recoveryPanel.hidden = true;
+      recoveryInstructions.hidden = true;
+      normalAccountForms.hidden = false;
+      show('Senha atualizada com sucesso. Agora você já pode entrar com a nova senha.');
+      window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.search}`);
+    } catch (error) { show(`Não foi possível atualizar a senha: ${error.message}`, true); }
+  });
+
+  if (isRecoveryUrl()) activateRecoveryMode();
+  window.supabase.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') activateRecoveryMode();
   });
 </script>
 </body>
