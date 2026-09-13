@@ -54,6 +54,20 @@
       <input id="loginPassword" type="password" required autocomplete="current-password">
       <button class="secondary" type="submit">Entrar</button>
     </form>
+    <h2>Redefinir senha</h2>
+    <form id="resetRequestForm">
+      <label for="resetEmail">E-mail da conta</label>
+      <input id="resetEmail" type="email" required autocomplete="email">
+      <button class="secondary" type="submit">Enviar link de redefinição</button>
+      <small>Você receberá um link no e-mail cadastrado.</small>
+    </form>
+
+    <form id="newPasswordForm" hidden>
+      <label for="newPassword">Nova senha</label>
+      <input id="newPassword" type="password" required minlength="8" autocomplete="new-password">
+      <button type="submit">Salvar nova senha</button>
+    </form>
+
     <div id="status" role="status" aria-live="polite"></div>
   </section>
 </main>
@@ -86,6 +100,31 @@
       show('Login realizado. Redirecionando para as ferramentas...');
       setTimeout(() => { window.location.href = 'pages/ferramentas.html'; }, 700);
     } catch (error) { show(`Não foi possível entrar: ${error.message}`); }
+  });
+
+  document.querySelector('#resetRequestForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    try {
+      await SABEM.solicitarRedefinicaoSenha(document.querySelector('#resetEmail').value.trim());
+      show('Se o e-mail estiver cadastrado, enviaremos um link para redefinir a senha.');
+    } catch (error) { show(`Não foi possível enviar o link: ${error.message}`); }
+  });
+
+  const newPasswordForm = document.querySelector('#newPasswordForm');
+  window.supabase.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      newPasswordForm.hidden = false;
+      show('Digite sua nova senha para concluir a recuperação.');
+    }
+  });
+
+  newPasswordForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    try {
+      await SABEM.atualizarSenha(document.querySelector('#newPassword').value);
+      newPasswordForm.hidden = true;
+      show('Senha atualizada com sucesso. Você já pode entrar com a nova senha.');
+    } catch (error) { show(`Não foi possível atualizar a senha: ${error.message}`); }
   });
 </script>
 </body>
