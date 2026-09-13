@@ -67,6 +67,22 @@ async function sairUsuario() {
   if (error) throw error;
 }
 
+async function solicitarRedefinicaoSenha(email, redirectTo = `${window.location.origin}/cadastro.html`) {
+  const normalizedEmail = String(email || '').trim();
+  if (!normalizedEmail) throw new Error('Informe o e-mail para receber o link de redefinição.');
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(normalizedEmail, { redirectTo });
+  if (error) throw error;
+}
+
+async function atualizarSenha(novaSenha) {
+  if (!novaSenha || novaSenha.length < 8) {
+    throw new Error('A nova senha deve ter pelo menos 8 caracteres.');
+  }
+  const { data, error } = await supabaseClient.auth.updateUser({ password: novaSenha });
+  if (error) throw error;
+  return data.user;
+}
+
 async function carregarPerfil() {
   const user = await getCurrentUser();
   if (!user) return null;
@@ -273,6 +289,8 @@ window.SABEM = {
   cadastrarUsuario,
   entrarUsuario,
   sairUsuario,
+  solicitarRedefinicaoSenha,
+  atualizarSenha,
   carregarPerfil,
   registrarVisita,
   registrarEvento,
