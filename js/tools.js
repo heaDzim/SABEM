@@ -146,210 +146,27 @@ function initBreathingTimer() {
 
 // Habit Tracker
 function initHabitTracker() {
-    const addHabitBtn = document.getElementById('addHabitBtn');
-    const newHabitInput = document.getElementById('newHabit');
-    const habitsList = document.getElementById('habitsList');
-    const completedToday = document.getElementById('completedToday');
-    const weekStreak = document.getElementById('weekStreak');
-    const totalHabits = document.getElementById('totalHabits');
-
-    let habits = JSON.parse(localStorage.getItem('sabem_habits')) || [
-        { id: 1, name: 'Beber 8 copos de água', completed: false, streak: 0 },
-        { id: 2, name: 'Exercitar-se por 30 minutos', completed: false, streak: 0 },
-        { id: 3, name: 'Meditar por 10 minutos', completed: false, streak: 0 },
-        { id: 4, name: 'Dormir 8 horas', completed: false, streak: 0 }
-    ];
-
-    addHabitBtn.addEventListener('click', addHabit);
-    newHabitInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') addHabit();
-    });
-
-    function addHabit() {
-        const habitName = newHabitInput.value.trim();
-        if (habitName) {
-            const newHabit = {
-                id: Date.now(),
-                name: habitName,
-                completed: false,
-                streak: 0
-            };
-            habits.push(newHabit);
-            newHabitInput.value = '';
-            saveHabits();
-            renderHabits();
-        }
-    }
-
-    function toggleHabit(id) {
-        const habit = habits.find(h => h.id === id);
-        if (habit) {
-            habit.completed = !habit.completed;
-            if (habit.completed) {
-                habit.streak++;
-            }
-            saveHabits();
-            renderHabits();
-        }
-    }
-
-    function deleteHabit(id) {
-        habits = habits.filter(h => h.id !== id);
-        saveHabits();
-        renderHabits();
-    }
-
-    function renderHabits() {
-        habitsList.innerHTML = '';
-        habits.forEach(habit => {
-            const habitElement = document.createElement('div');
-            habitElement.className = `habit-item ${habit.completed ? 'completed' : ''}`;
-            habitElement.innerHTML = `
-                <div class="habit-content">
-                    <button class="habit-check" onclick="toggleHabit(${habit.id})">
-                        <i class="fas ${habit.completed ? 'fa-check-circle' : 'fa-circle'}"></i>
-                    </button>
-                    <span class="habit-name">${habit.name}</span>
-                    <span class="habit-streak">${habit.streak} dias</span>
-                </div>
-                <button class="habit-delete" onclick="deleteHabit(${habit.id})">
-                    <i class="fas fa-trash"></i>
-                </button>
-            `;
-            habitsList.appendChild(habitElement);
-        });
-
-        updateStats();
-    }
-
-    function updateStats() {
-        const completed = habits.filter(h => h.completed).length;
-        const avgStreak = habits.length > 0 ? Math.round(habits.reduce((sum, h) => sum + h.streak, 0) / habits.length) : 0;
-        
-        completedToday.textContent = completed;
-        weekStreak.textContent = avgStreak;
-        totalHabits.textContent = habits.length;
-    }
-
-    function saveHabits() {
-        localStorage.setItem('sabem_habits', JSON.stringify(habits));
-    }
-
-    // Make functions global for onclick handlers
-    window.toggleHabit = toggleHabit;
-    window.deleteHabit = deleteHabit;
-
-    renderHabits();
+    // O Tracker de Hábitos é carregado e atualizado pelo persistence.js/Supabase.
+    // Não usar localStorage aqui para evitar sobrescrever o histórico persistente.
 }
 
 // Emotional Diary
 function initEmotionalDiary() {
     const moodBtns = document.querySelectorAll('.mood-btn');
-    const diaryText = document.getElementById('diaryText');
-    const saveDiaryBtn = document.getElementById('saveDiary');
-    const diaryEntries = document.getElementById('diaryEntries');
     const tags = document.querySelectorAll('.tag');
-
-    let selectedMood = '';
-    let selectedTags = [];
-    let entries = JSON.parse(localStorage.getItem('sabem_diary')) || [];
 
     moodBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            moodBtns.forEach(b => b.classList.remove('selected'));
+            moodBtns.forEach(item => item.classList.remove('selected'));
             this.classList.add('selected');
-            selectedMood = this.dataset.mood;
         });
     });
 
     tags.forEach(tag => {
         tag.addEventListener('click', function() {
             this.classList.toggle('selected');
-            const tagValue = this.dataset.tag;
-            if (selectedTags.includes(tagValue)) {
-                selectedTags = selectedTags.filter(t => t !== tagValue);
-            } else {
-                selectedTags.push(tagValue);
-            }
         });
     });
-
-    saveDiaryBtn.addEventListener('click', saveDiaryEntry);
-
-    function saveDiaryEntry() {
-        const text = diaryText.value.trim();
-        if (text && selectedMood) {
-            const entry = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString('pt-BR'),
-                mood: selectedMood,
-                text: text,
-                tags: [...selectedTags]
-            };
-            
-            entries.unshift(entry);
-            localStorage.setItem('sabem_diary', JSON.stringify(entries));
-            
-            // Reset form
-            diaryText.value = '';
-            selectedMood = '';
-            selectedTags = [];
-            moodBtns.forEach(btn => btn.classList.remove('selected'));
-            tags.forEach(tag => tag.classList.remove('selected'));
-            
-            renderDiaryEntries();
-            
-            // Show success message
-            showNotification('Entrada salva com sucesso!', 'success');
-        } else {
-            showNotification('Por favor, selecione um humor e escreva algo.', 'warning');
-        }
-    }
-
-    function renderDiaryEntries() {
-        diaryEntries.innerHTML = '';
-        entries.slice(0, 5).forEach(entry => {
-            const entryElement = document.createElement('div');
-            entryElement.className = 'diary-entry-item';
-            entryElement.innerHTML = `
-                <div class="entry-header">
-                    <span class="entry-date">${entry.date}</span>
-                    <span class="entry-mood mood-${entry.mood}">
-                        ${getMoodIcon(entry.mood)} ${getMoodLabel(entry.mood)}
-                    </span>
-                </div>
-                <div class="entry-text">${entry.text.substring(0, 100)}${entry.text.length > 100 ? '...' : ''}</div>
-                <div class="entry-tags">
-                    ${entry.tags.map(tag => `<span class="entry-tag">${tag}</span>`).join('')}
-                </div>
-            `;
-            diaryEntries.appendChild(entryElement);
-        });
-    }
-
-    function getMoodIcon(mood) {
-        const icons = {
-            'muito-feliz': '😄',
-            'feliz': '😊',
-            'neutro': '😐',
-            'triste': '😢',
-            'muito-triste': '😭'
-        };
-        return icons[mood] || '😐';
-    }
-
-    function getMoodLabel(mood) {
-        const labels = {
-            'muito-feliz': 'Muito Feliz',
-            'feliz': 'Feliz',
-            'neutro': 'Neutro',
-            'triste': 'Triste',
-            'muito-triste': 'Muito Triste'
-        };
-        return labels[mood] || 'Neutro';
-    }
-
-    renderDiaryEntries();
 }
 
 // Wellness Calculator
@@ -610,21 +427,6 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// Reset daily habits at midnight
-function checkDailyReset() {
-    const lastReset = localStorage.getItem('sabem_last_reset');
-    const today = new Date().toDateString();
-    
-    if (lastReset !== today) {
-        const habits = JSON.parse(localStorage.getItem('sabem_habits')) || [];
-        habits.forEach(habit => {
-            habit.completed = false;
-        });
-        localStorage.setItem('sabem_habits', JSON.stringify(habits));
-        localStorage.setItem('sabem_last_reset', today);
-    }
-}
-
-// Check for daily reset on page load
-checkDailyReset();
+// O reset diário é calculado pelo Supabase a partir de completed_on.
+// Não usar localStorage para alterar o histórico persistente.
 

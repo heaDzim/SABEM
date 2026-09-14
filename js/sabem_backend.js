@@ -70,8 +70,19 @@ async function sairUsuario() {
 async function solicitarRedefinicaoSenha(email, redirectTo = `${window.location.origin}/cadastro.html`) {
   const normalizedEmail = String(email || '').trim();
   if (!normalizedEmail) throw new Error('Informe o e-mail para receber o link de redefinição.');
+  if (!/^https?:\/\//i.test(redirectTo)) throw new Error('O endereço de retorno da recuperação não é válido.');
+
   const { error } = await supabaseClient.auth.resetPasswordForEmail(normalizedEmail, { redirectTo });
-  if (error) throw error;
+  if (!error) return true;
+
+  const raw = `${error.message || ''} ${error.code || ''}`.toLowerCase();
+  if (raw.includes('rate limit') || raw.includes('too many')) {
+    throw new Error('O limite de envio de e-mails foi atingido. Aguarde alguns minutos e tente novamente.');
+  }
+  if (raw.includes('smtp') || raw.includes('error sending') || raw.includes('email')) {
+    throw new Error('O Supabase não conseguiu enviar o e-mail. Verifique o SMTP em Authentication > SMTP Settings e confirme o endereço do remetente.');
+  }
+  throw new Error(error.message || 'Não foi possível enviar o e-mail de recuperação.');
 }
 
 async function atualizarSenha(novaSenha) {
@@ -124,6 +135,15 @@ async function registrarEvento(toolKey, actionKey, metadata = {}) {
     metadata
   });
   if (error) throw error;
+
+  // Cada uso concluído alimenta o acompanhamento do painel.
+  const values = metadata && typeof metadata === 'object' ? metadata : {};
+  if (toolKey === 'timer_respiracao' && actionKey === 'start') await incrementarProgresso('meditacao');
+  if (toolKey === 'calculadora_bem_estar' && actionKey === 'calculate') {
+    if (Number(values.exercise) > 0) await incrementarProgresso('exercicios');
+    if (Number(values.sleep) > 0) await incrementarProgresso('sono');
+    if (Number(values.nutrition) > 0) await incrementarProgresso('alimentacao');
+  }
 }
 
 async function registrarAcaoRapida(actionKey, actionLabel) {
@@ -155,41 +175,68 @@ async function salvarEntradaEmocional({ moodKey, reflection, emotionTags }) {
     .select()
     .single();
   if (error) throw error;
+  await limparEntradasEmocionaisExcedentes();
   await registrarEvento('diario_emocional', 'save_entry', { mood: moodKey });
   return data;
+}
+
+async function limparEntradasEmocionaisExcedentes() {
+  const user = await getCurrentUser();
+  if (!user) return;
+  const { data: excedentes, error } = await supabaseClient
+    .from('emotional_entries')
+    .select('id')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .range(4, 9999);
+  if (error) throw error;
+  const ids = (excedentes || []).map(entry => entry.id);
+  if (!ids.length) return;
+  const { error: deleteError } = await supabaseClient
+    .from('emotional_entries')
+    .delete()
+    .in('id', ids);
+  if (deleteError) throw deleteError;
 }
 
 async function listarEntradasRecentes(limit = 4) {
   const user = await getCurrentUser();
   if (!user) return [];
+  await limparEntradasEmocionaisExcedentes();
+  const safeLimit = Math.min(4, Math.max(1, Number(limit) || 4));
   const { data, error } = await supabaseClient
     .from('emotional_entries')
     .select('id, mood_key, mood_label, reflection, emotion_tags, created_at')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
-    .limit(limit);
+    .limit(safeLimit);
   if (error) throw error;
-  return data;
+  return data || [];
 }
 
-async function registrarProgresso(itemKey, amount = 1) {
+async function incrementarProgresso(itemKey, amount = 1) {
   const user = await getCurrentUser();
   if (!user) return;
+  const definition = SABEM_PROGRESS.find(item => item.item_key === itemKey);
+  if (!definition) return;
   const { data: current, error: currentError } = await supabaseClient
     .from('progress_items')
     .select('completed_count')
     .eq('user_id', user.id)
     .eq('item_key', itemKey)
-    .single();
+    .maybeSingle();
   if (currentError) throw currentError;
-
+  const nextCount = (Number(current?.completed_count) || 0) + Math.max(1, Number(amount) || 1);
   const { error } = await supabaseClient
     .from('progress_items')
-    .update({ completed_count: current.completed_count + amount, updated_at: new Date().toISOString() })
-    .eq('user_id', user.id)
-    .eq('item_key', itemKey);
+    .upsert({ user_id: user.id, item_key: itemKey, item_label: definition.item_label, target_count: definition.target_count, completed_count: nextCount, updated_at: new Date().toISOString() }, { onConflict: 'user_id,item_key' });
   if (error) throw error;
-  await registrarEvento(itemKey, 'complete');
+}
+
+async function registrarProgresso(itemKey, amount = 1) {
+  await incrementarProgresso(itemKey, amount);
+  const user = await getCurrentUser();
+  if (user) await registrarEvento(itemKey, 'complete');
 }
 
 async function carregarPainelProgresso() {
@@ -226,9 +273,27 @@ async function carregarPainelProgresso() {
 //   renderEntradas(await listarEntradasRecentes());
 // });
 
+async function limparHabitosExcedentes() {
+  const user = await getCurrentUser();
+  if (!user) return;
+  const { data: excedentes, error } = await supabaseClient
+    .from('habits')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('active', true)
+    .order('created_at', { ascending: false })
+    .range(4, 9999);
+  if (error) throw error;
+  const ids = (excedentes || []).map(habit => habit.id);
+  if (!ids.length) return;
+  const { error: deleteError } = await supabaseClient.from('habits').delete().in('id', ids);
+  if (deleteError) throw deleteError;
+}
+
 async function listarHabitos() {
   const user = await getCurrentUser();
   if (!user) return [];
+  await limparHabitosExcedentes();
   const { data, error } = await supabaseClient
     .from('habits')
     .select('id, name, active, created_at, habit_completions(id, completed_on)')
@@ -249,6 +314,7 @@ async function criarHabito(name) {
     .select()
     .single();
   if (error) throw error;
+  await limparHabitosExcedentes();
   await registrarEvento('tracker_habitos', 'create_habit', { name: name.trim() });
   return data;
 }

@@ -116,7 +116,7 @@
         header.append(date, mood);
         const body = document.createElement('div');
         body.className = 'entry-text';
-        body.textContent = entry.reflection || 'Sem texto registrado.';
+        body.textContent = entry.reflection || 'Humor registrado sem reflexão escrita.';
         const tagLine = document.createElement('div');
         tagLine.className = 'entry-tags';
         (entry.emotion_tags || []).forEach(tag => {
@@ -167,24 +167,28 @@
     }
 
     const calculate = document.querySelector('#calculateWellness');
-    if (calculate) calculate.addEventListener('click', () => {
+    if (calculate) calculate.addEventListener('click', async () => {
       const values = {};
       ['exercise', 'sleep', 'nutrition', 'stress', 'satisfaction', 'relaxation'].forEach(id => {
         const input = document.querySelector(`#${id}`);
         if (input) values[id] = Number(input.value);
       });
-      SABEM.registrarEvento('calculadora_bem_estar', 'calculate', values).catch(console.error);
+      try {
+        await SABEM.registrarEvento('calculadora_bem_estar', 'calculate', values);
+        await loadProgressPanel();
+      } catch (error) { console.error('Não foi possível registrar o cálculo:', error); }
     });
 
     const startBreathing = document.querySelector('#startBreathing');
-    if (startBreathing) startBreathing.addEventListener('click', () => {
+    if (startBreathing) startBreathing.addEventListener('click', async () => {
       const technique = document.querySelector('#breathingTechnique');
-      SABEM.registrarEvento('timer_respiracao', 'start', { technique: technique ? technique.value : null }).catch(console.error);
+      try {
+        await SABEM.registrarEvento('timer_respiracao', 'start', { technique: technique ? technique.value : null });
+        await loadProgressPanel();
+      } catch (error) { console.error('Não foi possível registrar a sessão de respiração:', error); }
     });
-    const stopBreathing = document.querySelector('#stopBreathing');
-    if (stopBreathing) stopBreathing.addEventListener('click', () => {
-      SABEM.registrarProgresso('meditacao').catch(console.error);
-    });
+    // A sessão de respiração é contabilizada uma única vez no clique em Iniciar,
+    // dentro de SABEM.registrarEvento('timer_respiracao', 'start').
 
     const habitsList = document.querySelector('#habitsList');
     const addHabitBtn = document.querySelector('#addHabitBtn');
