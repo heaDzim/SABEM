@@ -2218,6 +2218,26 @@ body {
     background: rgba(76, 175, 80, 0.1);
 }
 
+.achievement-item.locked {
+    opacity: .72;
+    background: rgba(0, 0, 0, .035);
+}
+
+.achievement-item > div {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+}
+
+.achievement-item small {
+    color: var(--text-color, #666);
+    font-size: .82rem;
+}
+
+.achievement-item.locked i {
+    color: #999;
+}
+
 .achievement-item i {
     color: var(--accent-color);
     font-size: 1.2rem;
