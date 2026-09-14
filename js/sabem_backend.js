@@ -175,34 +175,13 @@ async function salvarEntradaEmocional({ moodKey, reflection, emotionTags }) {
     .select()
     .single();
   if (error) throw error;
-  await limparEntradasEmocionaisExcedentes();
   await registrarEvento('diario_emocional', 'save_entry', { mood: moodKey });
   return data;
-}
-
-async function limparEntradasEmocionaisExcedentes() {
-  const user = await getCurrentUser();
-  if (!user) return;
-  const { data: excedentes, error } = await supabaseClient
-    .from('emotional_entries')
-    .select('id')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .range(4, 9999);
-  if (error) throw error;
-  const ids = (excedentes || []).map(entry => entry.id);
-  if (!ids.length) return;
-  const { error: deleteError } = await supabaseClient
-    .from('emotional_entries')
-    .delete()
-    .in('id', ids);
-  if (deleteError) throw deleteError;
 }
 
 async function listarEntradasRecentes(limit = 4) {
   const user = await getCurrentUser();
   if (!user) return [];
-  await limparEntradasEmocionaisExcedentes();
   const safeLimit = Math.min(4, Math.max(1, Number(limit) || 4));
   const { data, error } = await supabaseClient
     .from('emotional_entries')
@@ -273,27 +252,9 @@ async function carregarPainelProgresso() {
 //   renderEntradas(await listarEntradasRecentes());
 // });
 
-async function limparHabitosExcedentes() {
-  const user = await getCurrentUser();
-  if (!user) return;
-  const { data: excedentes, error } = await supabaseClient
-    .from('habits')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('active', true)
-    .order('created_at', { ascending: false })
-    .range(4, 9999);
-  if (error) throw error;
-  const ids = (excedentes || []).map(habit => habit.id);
-  if (!ids.length) return;
-  const { error: deleteError } = await supabaseClient.from('habits').delete().in('id', ids);
-  if (deleteError) throw deleteError;
-}
-
 async function listarHabitos() {
   const user = await getCurrentUser();
   if (!user) return [];
-  await limparHabitosExcedentes();
   const { data, error } = await supabaseClient
     .from('habits')
     .select('id, name, active, created_at, habit_completions(id, completed_on)')
@@ -314,7 +275,6 @@ async function criarHabito(name) {
     .select()
     .single();
   if (error) throw error;
-  await limparHabitosExcedentes();
   await registrarEvento('tracker_habitos', 'create_habit', { name: name.trim() });
   return data;
 }
