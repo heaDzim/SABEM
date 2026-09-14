@@ -1,6 +1,6 @@
-// Tools JavaScript - Interactive Features for SABEM
+// Tools JavaScript - SABEM
 
-// Initialize tools when DOM is loaded
+// Initialização das ferramentas
 document.addEventListener('DOMContentLoaded', function() {
     initBreathingTimer();
     initHabitTracker();
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initQuickActions();
 });
 
-// Breathing Timer
+// Timer de respiração
 function initBreathingTimer() {
     const startBtn = document.getElementById('startBreathing');
     const pauseBtn = document.getElementById('pauseBreathing');
@@ -144,13 +144,12 @@ function initBreathingTimer() {
     }
 }
 
-// Habit Tracker
+// Tracker de hábitos
 function initHabitTracker() {
-    // O Tracker de Hábitos é carregado e atualizado pelo persistence.js/Supabase.
-    // Não usar localStorage aqui para evitar sobrescrever o histórico persistente.
+    // O Tracker de Hábitos é carregado e atualizado pelo persistence.js/Supabase.    
 }
 
-// Emotional Diary
+// Diário emocional
 function initEmotionalDiary() {
     const moodBtns = document.querySelectorAll('.mood-btn');
     const tags = document.querySelectorAll('.tag');
@@ -169,7 +168,7 @@ function initEmotionalDiary() {
     });
 }
 
-// Wellness Calculator
+// Calculadora de Bem-estar
 function initWellnessCalculator() {
     const sliders = document.querySelectorAll('.slider');
     const calculateBtn = document.getElementById('calculateWellness');
@@ -182,7 +181,7 @@ function initWellnessCalculator() {
             updateSliderValue(this, valueSpan);
         });
         
-        // Initialize values
+        // Valores iniciais
         updateSliderValue(slider, valueSpan);
     });
 
@@ -212,11 +211,11 @@ function initWellnessCalculator() {
         const satisfaction = parseInt(document.getElementById('satisfaction').value);
         const relaxation = parseInt(document.getElementById('relaxation').value);
 
-        // Calculate score (0-100)
+        // Calcular score (0-100) Sempre -100
         const exerciseScore = (exercise / 7) * 20;
         const sleepScore = (sleep / 10) * 15;
         const nutritionScore = (nutrition / 10) * 15;
-        const stressScore = ((10 - stress) / 10) * 20; // Inverted because lower stress is better
+        const stressScore = ((10 - stress) / 10) * 20;
         const satisfactionScore = (satisfaction / 10) * 20;
         const relaxationScore = (relaxation / 7) * 10;
 
@@ -289,7 +288,7 @@ function initWellnessCalculator() {
     }
 }
 
-// Quick Actions
+// Ações rápidas
 function initQuickActions() {
     const actionBtns = document.querySelectorAll('.action-btn');
     const actionResult = document.getElementById('actionResult');
@@ -404,7 +403,7 @@ function initQuickActions() {
     };
 }
 
-// Utility Functions
+// Avisos 
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
@@ -428,5 +427,3 @@ function showNotification(message, type = 'info') {
 }
 
 // O reset diário é calculado pelo Supabase a partir de completed_on.
-// Não usar localStorage para alterar o histórico persistente.
-
