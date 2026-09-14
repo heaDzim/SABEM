@@ -9,8 +9,7 @@
  */
 
 const SUPABASE_URL = 'https://yiwgsuzzfkemflhoxjej.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlpd2dzdXp6ZmtlbWZsaG94amVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMDM5ODEsImV4cCI6MjEwNDc3OTk4MX0.CBUU83ZXHMqhW4Co7J8u9_wxTXzXi6uIzuAescVuGzc';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlpd2dzdXp6ZmtlbWZsaG94amVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMDM5ODEsImV4cCI6MjEwNDc3OTk4MX0.CBUU83ZXHMqhW4Co7J8u9_wxTXzXi6uIzuAescVuGzc';const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const SABEM_PROGRESS = [
   { item_key: 'exercicios', item_label: 'Exercícios', target_count: 7 },
@@ -218,25 +217,114 @@ async function registrarProgresso(itemKey, amount = 1) {
   if (user) await registrarEvento(itemKey, 'complete');
 }
 
+function dataKey(value) {
+  return new Date(value).toISOString().slice(0, 10);
+}
+
+function uniqueDayKeys(rows, dateField) {
+  return new Set((rows || []).map(row => dataKey(row[dateField])));
+}
+
+function consecutiveDays(dayKeys, reference = new Date()) {
+  const days = new Set(dayKeys);
+  let cursor = new Date(reference);
+  cursor.setUTCHours(0, 0, 0, 0);
+  let total = 0;
+  while (days.has(cursor.toISOString().slice(0, 10))) {
+    total += 1;
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+  return total;
+}
+
+function startOfSevenDayWindow(reference = new Date()) {
+  const start = new Date(reference);
+  start.setUTCHours(0, 0, 0, 0);
+  start.setUTCDate(start.getUTCDate() - 6);
+  return start;
+}
+
+function eventDaysSince(events, start) {
+  return new Set((events || [])
+    .filter(event => new Date(event.created_at) >= start)
+    .map(event => dataKey(event.created_at)));
+}
+
 async function carregarPainelProgresso() {
   const user = await getCurrentUser();
-  if (!user) return { visits: 0, progress: [], actions: [], achievements: [] };
+  if (!user) return { visits: 0, visitDays: 0, currentStreak: 0, progress: [], actions: [], achievements: [], toolEvents: 0 };
 
-  const [visits, progress, actions, achievements, toolEvents] = await Promise.all([
+  const [visits, actions, achievements, toolEvents, visitRows, eventRows] = await Promise.all([
     supabaseClient.from('site_visits').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
-    supabaseClient.from('progress_items').select('*').eq('user_id', user.id).order('item_key'),
     supabaseClient.from('quick_action_events').select('action_key, action_label, accessed_at').eq('user_id', user.id).order('accessed_at', { ascending: false }).limit(20),
     supabaseClient.from('achievements').select('*').eq('user_id', user.id).order('achieved_at', { ascending: false }).limit(10),
-    supabaseClient.from('tool_events').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+    supabaseClient.from('tool_events').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+    supabaseClient.from('site_visits').select('visited_at').eq('user_id', user.id).order('visited_at', { ascending: false }),
+    supabaseClient.from('tool_events').select('tool_key, action_key, metadata, created_at').eq('user_id', user.id).order('created_at', { ascending: false })
   ]);
-  for (const response of [visits, progress, actions, achievements, toolEvents]) {
+  for (const response of [visits, actions, achievements, toolEvents, visitRows, eventRows]) {
     if (response.error) throw response.error;
   }
+
+  const visitsData = visitRows.data || [];
+  const events = eventRows.data || [];
+  const visitDayKeys = uniqueDayKeys(visitsData, 'visited_at');
+  const today = new Date();
+  const weekStart = startOfSevenDayWindow(today);
+  const activityDays = {
+    exercicios: eventDaysSince(events.filter(e => e.tool_key === 'calculadora_bem_estar' && e.action_key === 'calculate' && Number(e.metadata?.exercise) > 0), weekStart),
+    meditacao: eventDaysSince(events.filter(e => e.tool_key === 'timer_respiracao' && e.action_key === 'start'), weekStart),
+    sono: eventDaysSince(events.filter(e => e.tool_key === 'calculadora_bem_estar' && e.action_key === 'calculate' && Number(e.metadata?.sleep) > 0), weekStart),
+    alimentacao: eventDaysSince(events.filter(e => e.tool_key === 'calculadora_bem_estar' && e.action_key === 'calculate' && Number(e.metadata?.nutrition) > 0), weekStart)
+  };
+
+  const labels = {
+    exercicios: 'Exercícios', meditacao: 'Meditação', sono: 'Sono', alimentacao: 'Alimentação'
+  };
+  const progress = Object.keys(labels).map(itemKey => {
+    const completed = activityDays[itemKey].size;
+    return { item_key: itemKey, item_label: labels[itemKey], target_count: 7, completed_count: completed, active_days: completed };
+  });
+
+  const allHealthyDays = new Set([...activityDays.exercicios, ...activityDays.meditacao, ...activityDays.sono, ...activityDays.alimentacao]);
+  const exerciseAllDays = new Set(events.filter(e => e.tool_key === 'calculadora_bem_estar' && e.action_key === 'calculate' && Number(e.metadata?.exercise) > 0).map(e => dataKey(e.created_at)));
+  const meditationAllDays = new Set(events.filter(e => e.tool_key === 'timer_respiracao' && e.action_key === 'start').map(e => dataKey(e.created_at)));
+  const exerciseStreak = consecutiveDays(exerciseAllDays);
+  const allAreasStarted = Object.values(activityDays).every(days => days.size > 0);
+  const achievementsDynamic = [
+    {
+      achievement_key: 'exercicio_7_dias',
+      title: '7 dias consecutivos de exercício',
+      description: exerciseStreak >= 7 ? 'Conquista desbloqueada: exercícios em 7 dias seguidos.' : `Progresso: ${exerciseStreak}/7 dias consecutivos.`,
+      unlocked: exerciseStreak >= 7
+    },
+    {
+      achievement_key: 'primeira_semana_meditacao',
+      title: 'Primeira semana de meditação',
+      description: meditationAllDays.size >= 7 ? 'Conquista desbloqueada: meditação em 7 dias.' : `Progresso: ${meditationAllDays.size}/7 dias de meditação.`,
+      unlocked: meditationAllDays.size >= 7
+    },
+    {
+      achievement_key: '30_dias_habitos',
+      title: '30 dias de hábitos saudáveis',
+      description: allHealthyDays.size >= 30 ? 'Conquista desbloqueada: atividades saudáveis em 30 dias.' : `Progresso: ${allHealthyDays.size}/30 dias ativos.`,
+      unlocked: allHealthyDays.size >= 30
+    },
+    {
+      achievement_key: 'mestre_bem_estar',
+      title: 'Mestre do bem-estar',
+      description: allAreasStarted && allHealthyDays.size >= 30 ? 'Conquista desbloqueada: todas as áreas foram acompanhadas.' : 'Complete as quatro áreas e acumule 30 dias saudáveis.',
+      unlocked: allAreasStarted && allHealthyDays.size >= 30
+    }
+  ];
+
   return {
     visits: visits.count || 0,
-    progress: progress.data || [],
+    visitDays: visitDayKeys.size,
+    currentStreak: consecutiveDays(visitDayKeys),
+    progress,
     actions: actions.data || [],
-    achievements: achievements.data || [],
+    achievements: achievementsDynamic,
     toolEvents: toolEvents.count || 0
   };
 }

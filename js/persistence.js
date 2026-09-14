@@ -15,7 +15,11 @@
 
     const profile = await SABEM.carregarPerfil().catch(() => null);
     if (profile) {
-      SABEM.registrarVisita(window.location.pathname).catch(error => console.error('Não foi possível registrar a visita:', error));
+      try {
+        await SABEM.registrarVisita(window.location.pathname);
+      } catch (error) {
+        console.error('Não foi possível registrar a visita:', error);
+      }
     }
     const loggedUser = document.querySelector('#loggedUser');
     const logoutBtn = document.querySelector('#logoutBtn');
@@ -48,18 +52,21 @@
       }
       try {
         const panel = await SABEM.carregarPainelProgresso();
-        if (visitCount) visitCount.textContent = panel.visits;
-        if (toolUsageSummary) toolUsageSummary.textContent = `${panel.toolEvents || 0} usos de ferramentas · ${panel.actions.length} ações rápidas`;
+        if (visitCount) visitCount.textContent = `${panel.visits} visitas · ${panel.visitDays || 0} dias`;
+        if (toolUsageSummary) toolUsageSummary.textContent = `${panel.toolEvents || 0} usos de ferramentas · ${panel.actions.length} ações rápidas · sequência atual: ${panel.currentStreak || 0} dias`;
         (panel.progress || []).forEach(item => {
           const row = document.querySelector(`[data-progress-key="${item.item_key}"]`);
           if (!row) return;
-          const target = Number(item.target_count) || 1;
-          const completed = Number(item.completed_count) || 0;
+          const target = Number(item.target_count) || 7;
+          const completed = Math.min(target, Number(item.completed_count) || 0);
           const percent = Math.min(100, Math.round((completed / target) * 100));
           const fill = row.querySelector('[data-progress-fill]');
           const label = row.querySelector('[data-progress-label]');
-          if (fill) fill.style.width = `${percent}%`;
-          if (label) label.textContent = `${percent}% da meta semanal (${completed}/${target})`;
+          if (fill) {
+            fill.style.width = `${percent}%`;
+            fill.setAttribute('aria-valuenow', String(percent));
+          }
+          if (label) label.textContent = `${percent}% da meta semanal (${completed}/${target} dias ativos)`;
         });
         if (achievementList) {
           achievementList.replaceChildren();
@@ -70,12 +77,17 @@
           } else {
             panel.achievements.forEach(achievement => {
               const item = document.createElement('div');
-              item.className = 'achievement-item earned';
+              const unlocked = achievement.unlocked !== false;
+              item.className = `achievement-item ${unlocked ? 'earned' : 'locked'}`;
               const icon = document.createElement('i');
-              icon.className = 'fas fa-medal';
-              const label = document.createElement('span');
+              icon.className = `fas ${unlocked ? 'fa-medal' : 'fa-lock'}`;
+              const content = document.createElement('div');
+              const label = document.createElement('strong');
               label.textContent = achievement.title;
-              item.append(icon, label);
+              const description = document.createElement('small');
+              description.textContent = achievement.description || 'Conquista desbloqueada.';
+              content.append(label, description);
+              item.append(icon, content);
               achievementList.appendChild(item);
             });
           }
